@@ -41,6 +41,17 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
     return 0;
 }
 
+void cdc_task()
+{
+    if (tud_cdc_n_available(0))
+    {
+        uint8_t buf[64];
+        uint32_t count = tud_cdc_n_read(0, buf, sizeof buf);
+        tud_cdc_n_write(0, buf, count);
+        tud_cdc_n_write_flush(0);
+    }
+}
+
 int main()
 {
     board_init();
@@ -50,6 +61,7 @@ int main()
     {
         tud_task();
         hid_task();
+        cdc_task();
     }
 
     return 0;
